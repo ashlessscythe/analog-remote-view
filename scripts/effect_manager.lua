@@ -52,6 +52,18 @@ function M.should_show(player)
   if util.setting_value(player, "rvc-enable", true) == false then
     return false
   end
+  -- gui.screen always draws above entity/inventory GUIs; hide while those are open
+  -- so E / Esc menus stay readable. Keep overlay while our settings window is open
+  -- so preset tweaks can be previewed live.
+  local opened = player.opened
+  if opened ~= nil then
+    local keep_for_settings = opened.object_name == "LuaGuiElement"
+      and opened.valid
+      and opened.name == "rvc_settings"
+    if not keep_for_settings then
+      return false
+    end
+  end
   if data.global_overlay then
     return true
   end
@@ -74,6 +86,7 @@ function M.enable(player)
   end
   overlay.build(player)
   hud.build(player)
+  glitch.reschedule(player)
   ensure_nth_tick()
 end
 
@@ -98,11 +111,17 @@ end
 --- @param preset_id string
 function M.set_preset(player, preset_id)
   player_data.set_preset(player, preset_id)
-  M.sync(player)
+  -- Full rebuild so tint/HUD theme swap immediately
+  if M.should_show(player) then
+    M.enable(player)
+  else
+    M.disable(player)
+  end
 end
 
 --- @param player LuaPlayer
 function M.apply_settings(player)
+  glitch.reschedule(player)
   M.sync(player)
 end
 

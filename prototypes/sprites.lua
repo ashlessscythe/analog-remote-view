@@ -23,8 +23,8 @@ data:extend({
   sprite("rvc-phosphor", "phosphor-grid.png", 12),
   sprite("rvc-vignette", "vignette.png", 128),
   sprite("rvc-noise", "noise.png", 64),
-  sprite("rvc-tear", "tear-band.png", { 256, 8 }),
-  sprite("rvc-tracking", "tracking-bar.png", { 256, 6 }),
+  sprite("rvc-tear", "tear-band.png", { 256, 12 }),
+  sprite("rvc-tracking", "tracking-bar.png", { 256, 10 }),
   sprite("rvc-bezel", "bezel.png", 64),
   sprite("rvc-brackets", "target-brackets.png", 64),
   {

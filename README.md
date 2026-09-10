@@ -62,13 +62,14 @@ Player choices persist in the save (`storage`) and are not synced between player
 ## Limitations
 
 - Not true framebuffer distortion or GPU post-processing
-- Overlay draws above vanilla HUD (`player.gui.screen`)
+- Overlay draws above vanilla HUD (`player.gui.screen`); there is no API to clip it to the world viewport only
+- Overlay hides while entity/inventory GUIs are open (e.g. **E**) so those stay readable
 - No OS calendar date in the Factorio API (timestamp modes use playtime / in-game day / fixed string)
 - Simulated tear bands do not shift the world image underneath
 
 ## How to test
 
-1. Symlink or copy this folder into Factorio `mods/` as `analog-remote-view_0.1.1` (or zip via `./scripts/package_mod.sh`).
+1. Symlink or copy this folder into Factorio `mods/` as `analog-remote-view_0.1.2` (or zip via `./scripts/package_mod.sh`).
 2. Enable the mod; start a game.
 3. Press **TAB** (Toggle map) to enter Remote View — overlay should appear.
 4. Press **Ctrl+Shift+C** — change presets and toggles.

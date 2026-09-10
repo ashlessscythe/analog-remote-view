@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.2] — 2026-09-10
+
+### Fixed
+
+- Runtime mod settings (including default preset) now apply immediately in a loaded game
+- Overlay hides while entity/inventory GUIs are open so **E** menus stay readable
+
+### Changed
+
+- Softened vignette and dirty-screen noise textures and preset defaults
+- Reworked glitch scheduler so VHS/high tearing bursts are actually noticeable
+- Stronger tear/tracking band sprites; VHS defaults to frequent tearing
+
 ## [0.1.1] — 2026-09-10
 
 ### Changed

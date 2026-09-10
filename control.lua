@@ -39,28 +39,51 @@ script.on_event(defines.events.on_gui_click, settings_gui.on_gui_event)
 script.on_event(defines.events.on_gui_checked_state_changed, settings_gui.on_gui_event)
 script.on_event(defines.events.on_gui_value_changed, settings_gui.on_gui_event)
 script.on_event(defines.events.on_gui_selection_state_changed, settings_gui.on_gui_event)
-script.on_event(defines.events.on_gui_closed, settings_gui.on_gui_closed)
+
+script.on_event(defines.events.on_gui_opened, function(event)
+  local player = game.get_player(event.player_index)
+  if player then
+    effect_manager.sync(player)
+  end
+end)
+
+script.on_event(defines.events.on_gui_closed, function(event)
+  settings_gui.on_gui_closed(event)
+  local player = game.get_player(event.player_index)
+  if player then
+    effect_manager.sync(player)
+  end
+end)
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   if not event.setting or string.sub(event.setting, 1, 4) ~= "rvc-" then
     return
   end
-  if event.player_index then
-    local player = game.get_player(event.player_index)
-    if player then
-      local data = player_data.get(player)
-      if event.setting == "rvc-enable" then
-        data.enabled = player.mod_settings["rvc-enable"].value
-      elseif event.setting == "rvc-master-intensity" then
-        data.master_intensity = player.mod_settings["rvc-master-intensity"].value
-      elseif event.setting == "rvc-debug" then
-        data.debug = player.mod_settings["rvc-debug"].value
-      elseif event.setting == "rvc-remote-view-only" then
-        data.remote_view_only = player.mod_settings["rvc-remote-view-only"].value
-      elseif event.setting == "rvc-default-preset" then
-        -- Only affects new defaults; do not force-change current preset mid-session
-      end
-      effect_manager.sync(player)
+  if not event.player_index then
+    return
+  end
+  local player = game.get_player(event.player_index)
+  if not player then
+    return
+  end
+  local data = player_data.get(player)
+  if event.setting == "rvc-enable" then
+    data.enabled = player.mod_settings["rvc-enable"].value
+    effect_manager.sync(player)
+  elseif event.setting == "rvc-master-intensity" then
+    data.master_intensity = player.mod_settings["rvc-master-intensity"].value
+    effect_manager.sync(player)
+  elseif event.setting == "rvc-debug" then
+    data.debug = player.mod_settings["rvc-debug"].value
+    effect_manager.sync(player)
+  elseif event.setting == "rvc-remote-view-only" then
+    data.remote_view_only = player.mod_settings["rvc-remote-view-only"].value
+    if data.remote_view_only then
+      data.global_overlay = false
     end
+    effect_manager.sync(player)
+  elseif event.setting == "rvc-default-preset" then
+    local preset_id = player.mod_settings["rvc-default-preset"].value
+    effect_manager.set_preset(player, preset_id)
   end
 end)
