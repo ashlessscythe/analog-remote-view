@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Package remote-view-crt for Factorio Mod Portal upload.
-# Produces: remote-view-crt_<version>.zip containing remote-view-crt_<version>/...
+# Package analog-remote-view for Factorio Mod Portal upload.
+# Produces: analog-remote-view_<version>.zip containing analog-remote-view_<version>/...
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

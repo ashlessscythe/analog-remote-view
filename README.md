@@ -1,4 +1,4 @@
-# Remote View CRT
+# Analog Remote View
 
 Transforms Factorio **Remote View** into an old-school surveillance / CRT terminal display using **GUI overlays only**.
 
@@ -68,7 +68,7 @@ Player choices persist in the save (`storage`) and are not synced between player
 
 ## How to test
 
-1. Symlink or copy this folder into Factorio `mods/` as `remote-view-crt_0.1.0` (or zip via `./scripts/package_mod.sh`).
+1. Symlink or copy this folder into Factorio `mods/` as `analog-remote-view_0.1.1` (or zip via `./scripts/package_mod.sh`).
 2. Enable the mod; start a game.
 3. Press **TAB** (Toggle map) to enter Remote View — overlay should appear.
 4. Press **Ctrl+Shift+C** — change presets and toggles.

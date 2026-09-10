@@ -134,12 +134,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.meta.outputs.tag }}
-          name: Remote View CRT v${{ steps.meta.outputs.version }}
+          name: Analog Remote View v${{ steps.meta.outputs.version }}
           draft: ${{ github.ref_type != 'tag' }}
           generate_release_notes: true
           files: dist/${{ steps.meta.outputs.zip_name }}
           body: |
-            ## Remote View CRT v${{ steps.meta.outputs.version }}
+            ## Analog Remote View v${{ steps.meta.outputs.version }}
 
             ### Downloads
 

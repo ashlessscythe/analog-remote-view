@@ -1,4 +1,4 @@
---- In-game settings window for Remote View CRT.
+--- In-game settings window for Analog Remote View.
 local presets = require("scripts.presets")
 local player_data = require("scripts.player_data")
 local effect_manager = require("scripts.effect_manager")

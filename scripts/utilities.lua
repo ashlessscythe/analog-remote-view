@@ -1,4 +1,4 @@
---- Shared helpers for Remote View CRT.
+--- Shared helpers for Analog Remote View.
 local util = {}
 
 --- @param player LuaPlayer

@@ -6,7 +6,7 @@ The Mod Portal accepts a limited markdown subset. Screenshots live on the `publi
 
 ---
 
-# Remote View CRT
+# Analog Remote View
 
 > **Old-school surveillance terminal overlays for Factorio Remote View.**
 
@@ -42,7 +42,7 @@ Built for **Factorio 2.1**. Space Age is supported but not required. Nothing abo
 
 Per player, in **Settings → Mod settings**:
 
-- Enable Remote View CRT
+- Enable Analog Remote View
 - Default preset
 - Remote View only
 - Master intensity

@@ -1,4 +1,4 @@
---- Data-driven visual presets for Remote View CRT.
+--- Data-driven visual presets for Analog Remote View.
 --- Adding a preset: append to `presets` and locale keys.
 
 --- @class RvcPreset

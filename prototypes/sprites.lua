@@ -1,4 +1,4 @@
-local PREFIX = "__remote-view-crt__/graphics/"
+local PREFIX = "__analog-remote-view__/graphics/"
 
 local function sprite(name, filename, size, flags)
   return {
