@@ -1,0 +1,150 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      create_github_release:
+        description: "Create a GitHub Release with the portal zip attached"
+        type: boolean
+        default: true
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: Package mod portal zip
+    runs-on: ubuntu-latest
+    outputs:
+      zip_name: ${{ steps.meta.outputs.zip_name }}
+      version: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read mod metadata
+        id: meta
+        run: |
+          NAME=$(python3 -c "import json; print(json.load(open('info.json'))['name'])")
+          VERSION=$(python3 -c "import json; print(json.load(open('info.json'))['version'])")
+          ZIP="${NAME}_${VERSION}.zip"
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "zip_name=${ZIP}" >> "$GITHUB_OUTPUT"
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify tag matches info.json (tag pushes)
+        if: github.ref_type == 'tag'
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${{ steps.meta.outputs.version }}"
+          NORMALIZED="${TAG#v}"
+          if [[ "${NORMALIZED}" != "${VERSION}" ]]; then
+            echo "Tag ${TAG} does not match info.json version ${VERSION}"
+            exit 1
+          fi
+
+      - name: Build portal zip
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zip unzip
+          chmod +x scripts/package_mod.sh
+          ./scripts/package_mod.sh dist
+
+      - name: Validate archive structure
+        run: |
+          NAME="${{ steps.meta.outputs.name }}"
+          VERSION="${{ steps.meta.outputs.version }}"
+          ZIP="dist/${{ steps.meta.outputs.zip_name }}"
+          EXPECTED_FOLDER="${NAME}_${VERSION}"
+          EXPECTED_PREFIX="${EXPECTED_FOLDER}/"
+
+          if [[ ! -f "${ZIP}" ]]; then
+            echo "Archive not found: ${ZIP}"
+            exit 1
+          fi
+
+          TOP_LEVEL="$(unzip -Z1 "${ZIP}" | awk -F/ 'NF{print $1}' | sort -u)"
+          COUNT="$(printf '%s\n' "${TOP_LEVEL}" | grep -c . || true)"
+
+          if [[ "${COUNT}" -ne 1 ]]; then
+            echo "Expected exactly one top-level entry, found ${COUNT}:"
+            printf '%s\n' "${TOP_LEVEL}"
+            exit 1
+          fi
+
+          if [[ "${TOP_LEVEL}" != "${EXPECTED_FOLDER}" ]]; then
+            echo "Top-level folder '${TOP_LEVEL}' does not match expected '${EXPECTED_FOLDER}'"
+            exit 1
+          fi
+
+          if ! unzip -Z1 "${ZIP}" | grep -qxF "${EXPECTED_PREFIX}info.json"; then
+            echo "Missing ${EXPECTED_PREFIX}info.json inside archive"
+            exit 1
+          fi
+
+          if ! unzip -Z1 "${ZIP}" | grep -qxF "${EXPECTED_PREFIX}changelog.txt"; then
+            echo "Missing ${EXPECTED_PREFIX}changelog.txt inside archive"
+            exit 1
+          fi
+
+          BAD_NAMES="$(unzip -Z1 "${ZIP}" | grep -Ei '\.(sh|ps1|py|exe|dll|so|dylib|bat|cmd|com)$' || true)"
+          if [[ -n "${BAD_NAMES}" ]]; then
+            echo "Archive contains files Mod Portal disallows:"
+            printf '%s\n' "${BAD_NAMES}"
+            exit 1
+          fi
+
+          BAD_MODE="$(unzip -Z "${ZIP}" | awk '
+            NR <= 2 { next }
+            $1 ~ /^d/ { next }
+            $1 ~ /x/ { print }
+          ')"
+          if [[ -n "${BAD_MODE}" ]]; then
+            echo "Archive contains files with the execute bit set (Mod Portal rejects these):"
+            printf '%s\n' "${BAD_MODE}"
+            exit 1
+          fi
+
+          echo "Archive OK: ${ZIP} → ${EXPECTED_PREFIX}"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.zip_name }}
+          path: dist/${{ steps.meta.outputs.zip_name }}
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: >
+          github.ref_type == 'tag' ||
+          (github.event_name == 'workflow_dispatch' && inputs.create_github_release)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: Remote View CRT v${{ steps.meta.outputs.version }}
+          draft: ${{ github.ref_type != 'tag' }}
+          generate_release_notes: true
+          files: dist/${{ steps.meta.outputs.zip_name }}
+          body: |
+            ## Remote View CRT v${{ steps.meta.outputs.version }}
+
+            ### Downloads
+
+            - `${{ steps.meta.outputs.zip_name }}` — Release package
+
+            ### Changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

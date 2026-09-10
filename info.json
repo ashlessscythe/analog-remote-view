@@ -1,0 +1,10 @@
+{
+  "name": "remote-view-crt",
+  "version": "0.1.0",
+  "title": "Remote View CRT",
+  "author": "Tony",
+  "homepage": "https://github.com/ashlessscythe/analog-remote-view",
+  "description": "Transforms Factorio Remote View into an old-school surveillance / CRT terminal overlay. Presets, scanlines, VHS-style HUD, and simulated signal interference — all via GUI overlays. Does not modify the rendering pipeline.",
+  "factorio_version": "2.1",
+  "dependencies": ["base >= 2.1.0"]
+}

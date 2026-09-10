@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  package:
+    name: Smoke-test packaging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install zip
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zip unzip
+
+      - name: Lua syntax check
+        run: |
+          if ! command -v luac >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y lua5.4
+          fi
+          FAIL=0
+          while IFS= read -r -d '' f; do
+            if ! luac -p "$f" 2>/tmp/luac.err; then
+              echo "FAIL $f"
+              cat /tmp/luac.err
+              FAIL=1
+            else
+              echo "OK $f"
+            fi
+          done < <(find . -name '*.lua' -not -path './dist/*' -print0)
+          exit $FAIL
+
+      - name: Validate info.json
+        run: python3 -c "import json; json.load(open('info.json')); print('info.json OK')"
+
+      - name: Build portal zip
+        run: |
+          chmod +x scripts/package_mod.sh
+          ./scripts/package_mod.sh dist
+
+      - name: Validate archive
+        run: |
+          ZIP=$(python3 -c "import json; i=json.load(open('info.json')); print(f\"{i['name']}_{i['version']}.zip\")")
+          PREFIX=$(python3 -c "import json; i=json.load(open('info.json')); print(f\"{i['name']}_{i['version']}/\")")
+          unzip -l "dist/${ZIP}" | head -40
+          unzip -l "dist/${ZIP}" | grep -F "${PREFIX}info.json"
+          unzip -l "dist/${ZIP}" | grep -F "${PREFIX}changelog.txt"
+          BAD_NAMES="$(unzip -Z1 "dist/${ZIP}" | grep -Ei '\.(sh|ps1|py|exe|dll|so|dylib|bat|cmd|com)$' || true)"
+          if [[ -n "${BAD_NAMES}" ]]; then
+            echo "Portal zip must not contain executables or shell scripts:"
+            printf '%s\n' "${BAD_NAMES}"
+            exit 1
+          fi
+          BAD_MODE="$(unzip -Z "dist/${ZIP}" | awk 'NR>2 && $1 !~ /^d/ && $1 ~ /x/ { print }')"
+          if [[ -n "${BAD_MODE}" ]]; then
+            echo "Portal zip must not contain files with the execute bit set:"
+            printf '%s\n' "${BAD_MODE}"
+            exit 1
+          fi
