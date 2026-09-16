@@ -24,9 +24,9 @@ end
 --- @param player LuaPlayer
 --- @return table
 function M.create_defaults(player)
-  local preset_id = util.setting_value(player, "rvc-default-preset", "classic_crt")
+  local preset_id = util.setting_value(player, "rvc-default-preset", "vhs")
   if not presets.exists(preset_id) then
-    preset_id = "classic_crt"
+    preset_id = "vhs"
   end
   local cfg = presets.apply_defaults(preset_id)
   cfg.enabled = util.setting_value(player, "rvc-enable", true)
@@ -46,7 +46,7 @@ end
 --- @param player LuaPlayer
 function M.reset_to_preset(player)
   local data = M.get(player)
-  local preset_id = data.preset or "classic_crt"
+  local preset_id = data.preset or "vhs"
   local fresh = presets.apply_defaults(preset_id)
   for k, v in pairs(fresh) do
     data[k] = v

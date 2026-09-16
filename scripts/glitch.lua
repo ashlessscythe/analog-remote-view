@@ -390,18 +390,20 @@ function M.update(player)
   local ticks_len = math.random(span[1], span[2])
   local roll = math.random()
   local kind = "tear"
-  -- Bias toward visible tear/tracking for high tearing (VHS)
+  -- Bias toward tracking snow / noise for high tearing (VHS tape look)
   local weight = TEAR_WEIGHT[tearing] or 0.5
   if weight >= 0.9 then
-    if roll < 0.05 then
+    if roll < 0.03 then
       kind = "signal_loss"
       ticks_len = ticks_len * 2
-    elseif roll < 0.45 then
+    elseif roll < 0.55 then
       kind = "tracking"
-    elseif roll < 0.85 then
+    elseif roll < 0.75 then
       kind = "tear"
-    else
+    elseif roll < 0.88 then
       kind = "static_band"
+    else
+      kind = "noise_burst"
     end
   else
     if roll < 0.06 then

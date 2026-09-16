@@ -65,14 +65,14 @@ local presets = {
   },
   vhs = {
     id = "vhs",
-    tint = { r = 0.7, g = 0.65, b = 0.55 },
-    opacity = 0.1,
+    tint = { r = 0.75, g = 0.68, b = 0.52 },
+    opacity = 0.14,
     scanlines = true,
-    scanline_strength = 0.65,
+    scanline_strength = 0.8,
     phosphor = false,
-    vignette = 0.05,
-    noise = 0.15,
-    flicker = 0.15,
+    vignette = 0.08,
+    noise = 0.22,
+    flicker = 0.22,
     tearing = "high",
     glitch_frequency = "frequent",
     glitch_duration = "long",
@@ -206,7 +206,7 @@ end
 --- @param id string
 --- @return RvcPreset
 function M.get(id)
-  return presets[id] or presets.classic_crt
+  return presets[id] or presets.vhs
 end
 
 --- @param id string

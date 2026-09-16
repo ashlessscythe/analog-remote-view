@@ -10,7 +10,7 @@ data:extend({
     type = "string-setting",
     name = "rvc-default-preset",
     setting_type = "runtime-per-user",
-    default_value = "classic_crt",
+    default_value = "vhs",
     allowed_values = {
       "classic_crt",
       "pipboy",

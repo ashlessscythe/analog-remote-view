@@ -1,8 +1,8 @@
 # Analog Remote View
 
-Transforms Factorio **Remote View** into an old-school surveillance / CRT terminal display using **GUI overlays only**.
+Transforms Factorio **Remote View** into an old-school **VHS / CRT terminal** display using **GUI overlays only**.
 
-> This mod uses Factorio GUI overlays to simulate CRT/display effects. It does **not** modify the game's underlying rendering pipeline.
+> This mod uses Factorio GUI overlays to simulate CRT/VHS effects. It does **not** modify the game's underlying rendering pipeline. Real NTSC/VHS processing (e.g. ntsc-rs) cannot run inside Factorio — there is no native library or driver API for mods.
 
 Built for **Factorio 2.1**. Space Age is supported but not required.
 
@@ -12,6 +12,7 @@ _Place screenshots under `media/` and sync the `public` branch for Mod Portal im
 
 ## Features
 
+- Defaults to a worn **VHS** look (warm wash, tracking snow, blinking REC OSD)
 - Overlay appears when you enter Remote View (optional global overlay mode)
 - Eight visual presets: Classic CRT, Terminal Green, VHS, Military, Sci-Fi, Mono Green, Mono Amber, Clean/Off
 - Scanlines, vignette, phosphor grid, noise, flicker
@@ -26,7 +27,7 @@ _Place screenshots under `media/` and sync the `public` branch for Mod Portal im
 |--------|------|
 | Classic CRT | Soft green wash, scanlines, light rolling tear |
 | Terminal Green | Green phosphor terminal HUD (original; not a copyrighted theme) |
-| VHS | Tracking noise, REC/CAM/timestamp, frequent rolling interference |
+| VHS | Tracking noise, blinking REC/CAM/timestamp, frequent rolling interference (**default**) |
 | Military Terminal | Grid coords, uplink status, target brackets, occasional signal drop |
 | Sci-Fi Surveillance | Cyan sensor-feed HUD, medium rolling interference |
 | Monochrome Green / Amber | Strong mono washes |
@@ -37,7 +38,7 @@ _Place screenshots under `media/` and sync the `public` branch for Mod Portal im
 **Settings → Mod settings** (per player):
 
 - Enable mod
-- Default preset
+- Default preset (VHS out of the box)
 - Remote View only (default)
 - Master intensity
 - Debug mode
@@ -63,6 +64,7 @@ Player choices persist in the save (`storage`) and are not synced between player
 ## Limitations
 
 - Not true framebuffer distortion or GPU post-processing
+- Cannot embed ntsc-rs or any native library/driver — Factorio mods are Lua + sprites only
 - Overlay draws above vanilla HUD (`player.gui.screen`); there is no API to clip it to the world viewport only
 - Overlay hides while entity/inventory GUIs are open (e.g. **E**) so those stay readable
 - No OS calendar date in the Factorio API (timestamp modes use playtime / in-game day / fixed string)
@@ -70,9 +72,9 @@ Player choices persist in the save (`storage`) and are not synced between player
 
 ## How to test
 
-1. Symlink or copy this folder into Factorio `mods/` as `analog-remote-view_0.1.3` (or zip via `./scripts/package_mod.sh`).
+1. Symlink or copy this folder into Factorio `mods/` as `analog-remote-view_0.1.4` (or zip via `./scripts/package_mod.sh`).
 2. Enable the mod; start a game.
-3. Press **TAB** (Toggle map) to enter Remote View — overlay should appear.
+3. Press **TAB** (Toggle map) to enter Remote View — VHS overlay should appear by default.
 4. Press **Ctrl+Shift+C** — change presets and toggles.
 5. Exit Remote View — overlay should disappear (unless Global overlay is on).
 6. Save/load while in Remote View; overlay should return.

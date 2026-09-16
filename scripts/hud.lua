@@ -168,7 +168,9 @@ function M.refresh(player)
   end
 
   if theme == "vhs" then
-    set(top_left.l1, { "rvc.hud-rec" })
+    -- ~1 Hz REC blink (HUD refresh is gated ~1/sec)
+    local rec_on = (math.floor(game.tick / 60) % 2) == 0
+    set(top_left.l1, rec_on and { "rvc.hud-rec-dot" } or { "rvc.hud-rec" })
     set(top_left.l2, { "rvc.hud-cam", cam })
     set(top_left.l3, date_line)
     set(top_right.r1, time_line)
@@ -176,8 +178,8 @@ function M.refresh(player)
     set(top_right.r3, { "rvc.hud-play" })
     set(bottom_left.bl1, surface.name)
     set(bottom_left.bl2, { "rvc.hud-coords", string.format("%.0f", pos.x), string.format("%.0f", pos.y) })
-    set(bottom_right.br1, { "rvc.hud-tracking" })
-    set(bottom_right.br2, "")
+    set(bottom_right.br1, { "rvc.hud-auto-tracking" })
+    set(bottom_right.br2, { "rvc.hud-sp-hifi" })
   elseif theme == "pipboy" then
     set(top_left.l1, { "rvc.hud-remote-surveillance" })
     set(top_left.l2, "--------------------")

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.4] — 2026-09-15
+
+### Changed
+
+- Default preset is now **VHS** (old-school tape / security-terminal look)
+- VHS preset retuned: warmer wash, stronger scanlines, higher noise and flicker
+- VHS OSD: blinking ● REC, AUTO TRACKING, SP HI-FI tape labels
+- High tearing glitches bias toward tracking snow and noise bursts (less total signal loss)
+- Docs clarify GUI-only simulation; ntsc-rs cannot be embedded as a library or driver in Factorio
+
 ## [0.1.3] — 2026-09-15
 
 ### Changed

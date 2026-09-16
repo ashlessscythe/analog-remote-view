@@ -8,18 +8,19 @@ The Mod Portal accepts a limited markdown subset. Screenshots live on the `publi
 
 # Analog Remote View
 
-> **Old-school surveillance terminal overlays for Factorio Remote View.**
+> **Old-school VHS / CRT terminal overlays for Factorio Remote View.**
 
-Turns Remote View into a CRT / VHS / tactical feed using **GUI overlays only**. Your factory stays visible and usable underneath.
+Turns Remote View into a worn VHS security feed (default) or other CRT / tactical looks using **GUI overlays only**. Your factory stays visible and usable underneath.
 
 Built for **Factorio 2.1**. Space Age is supported but not required. Nothing about recipes, combat, or progression is changed.
 
-**Important:** This mod simulates display effects with Factorio GUI sprites and text. It does **not** modify the game's rendering pipeline or apply real shaders.
+**Important:** This mod simulates display effects with Factorio GUI sprites and text. It does **not** modify the game's rendering pipeline or apply real shaders. Tools like ntsc-rs cannot be embedded — there is no native library API for Factorio mods.
 
 ---
 
 ## Features
 
+- Defaults to **VHS**: warm wash, tracking snow, blinking REC OSD
 - Overlay while in Remote View (optional global mode)
 - Presets: Classic CRT, Terminal Green, VHS, Military, Sci-Fi, Mono Green, Mono Amber, Clean/Off
 - Scanlines, vignette, phosphor grid, noise, flicker
