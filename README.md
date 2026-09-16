@@ -24,11 +24,11 @@ _Place screenshots under `media/` and sync the `public` branch for Mod Portal im
 
 | Preset | Feel |
 |--------|------|
-| Classic CRT | Soft green wash, scanlines, light tear |
+| Classic CRT | Soft green wash, scanlines, light rolling tear |
 | Terminal Green | Green phosphor terminal HUD (original; not a copyrighted theme) |
-| VHS | Tracking noise, REC/CAM/timestamp, higher tear |
-| Military Terminal | Grid coords, uplink status, target brackets |
-| Sci-Fi Surveillance | Cyan sensor-feed HUD |
+| VHS | Tracking noise, REC/CAM/timestamp, frequent rolling interference |
+| Military Terminal | Grid coords, uplink status, target brackets, occasional signal drop |
+| Sci-Fi Surveillance | Cyan sensor-feed HUD, medium rolling interference |
 | Monochrome Green / Amber | Strong mono washes |
 | Clean / Off | Subtle bezel only (or fully quiet with border off) |
 
@@ -58,6 +58,7 @@ Player choices persist in the save (`storage`) and are not synced between player
 - Overlay is built once on enter and destroyed on exit
 - Scanlines/vignette are stretched sprites (not thousands of line widgets)
 - Glitch/HUD updates run on a low-rate nth-tick only while overlays are active
+- Rolling tear/tracking bands use a 2-tick handler only while those bands are visible
 
 ## Limitations
 
@@ -65,11 +66,11 @@ Player choices persist in the save (`storage`) and are not synced between player
 - Overlay draws above vanilla HUD (`player.gui.screen`); there is no API to clip it to the world viewport only
 - Overlay hides while entity/inventory GUIs are open (e.g. **E**) so those stay readable
 - No OS calendar date in the Factorio API (timestamp modes use playtime / in-game day / fixed string)
-- Simulated tear bands do not shift the world image underneath
+- Simulated tear/tracking bands are overlay sprites (inspired by ntsc-rs tracking noise / snow); they do not process or shift the world image underneath
 
 ## How to test
 
-1. Symlink or copy this folder into Factorio `mods/` as `analog-remote-view_0.1.2` (or zip via `./scripts/package_mod.sh`).
+1. Symlink or copy this folder into Factorio `mods/` as `analog-remote-view_0.1.3` (or zip via `./scripts/package_mod.sh`).
 2. Enable the mod; start a game.
 3. Press **TAB** (Toggle map) to enter Remote View — overlay should appear.
 4. Press **Ctrl+Shift+C** — change presets and toggles.

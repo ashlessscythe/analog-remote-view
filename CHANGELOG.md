@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.3] — 2026-09-15
+
+### Changed
+
+- Tear and tracking bands now roll vertically (random start edge, then travel toward the opposite edge) instead of freezing in place
+- Tracking bursts stay edge-weighted and wrap in that zone, approximating VHS tracking noise with overlay sprites only
+- Rolling interference defaults: VHS (high/frequent/long), Sci-Fi Surveillance (medium/occasional), Classic CRT and Military (low/occasional). Clean stays off; Terminal Green and mono stay rare.
+
+### Fixed
+
+- Loading a save no longer crashes (`on_load` cannot use `game`; rolling-band tick is rebound from storage)
+
 ## [0.1.2] — 2026-09-10
 
 ### Fixed

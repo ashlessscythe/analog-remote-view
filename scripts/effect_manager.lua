@@ -8,8 +8,10 @@ local glitch = require("scripts.glitch")
 local M = {}
 
 local NTH = 15 -- 4 Hz for glitch/HUD cadence (HUD also gates to ~1s)
+local ANIM_NTH = 2 -- must match glitch.lua ANIM_DT; only while bands roll
 --- Runtime-only; never persisted. Re-bound in on_load.
 local nth_tick_registered = false
+local anim_tick_registered = false
 
 --- @return boolean
 local function any_active()
@@ -19,6 +21,44 @@ local function any_active()
   for _, v in pairs(storage.active_overlays) do
     if v then
       return true
+    end
+  end
+  return false
+end
+
+--- @return boolean
+local function any_rolling()
+  if not storage.active_overlays then
+    return false
+  end
+  -- Prefer LuaPlayer when `game` exists (runtime). on_load cannot use `game`.
+  if game then
+    for player_index, active in pairs(storage.active_overlays) do
+      if active then
+        local player = game.get_player(player_index)
+        if player and player.valid and glitch.is_rolling(player) then
+          return true
+        end
+      end
+    end
+    return false
+  end
+  local players = storage.players
+  if not players then
+    return false
+  end
+  for player_index, active in pairs(storage.active_overlays) do
+    if active then
+      local data = players[player_index]
+      local bands = data and data.tear_bands
+      if bands then
+        for i = 1, #bands do
+          local band = bands[i]
+          if band and not band.done and band.mode ~= "static" then
+            return true
+          end
+        end
+      end
     end
   end
   return false
@@ -34,6 +74,20 @@ local function ensure_nth_tick()
     if nth_tick_registered then
       script.on_nth_tick(NTH, nil)
       nth_tick_registered = false
+    end
+  end
+end
+
+local function ensure_anim_tick()
+  if any_rolling() then
+    if not anim_tick_registered then
+      script.on_nth_tick(ANIM_NTH, M.on_anim_tick)
+      anim_tick_registered = true
+    end
+  else
+    if anim_tick_registered then
+      script.on_nth_tick(ANIM_NTH, nil)
+      anim_tick_registered = false
     end
   end
 end
@@ -76,6 +130,7 @@ function M.disable(player)
   hud.destroy(player)
   overlay.destroy(player)
   ensure_nth_tick()
+  ensure_anim_tick()
 end
 
 --- @param player LuaPlayer
@@ -88,6 +143,7 @@ function M.enable(player)
   hud.build(player)
   glitch.reschedule(player)
   ensure_nth_tick()
+  ensure_anim_tick()
 end
 
 --- Rebuild or tear down based on current state.
@@ -147,14 +203,37 @@ function M.on_nth_tick(event)
     end
   end
   ensure_nth_tick()
+  ensure_anim_tick()
+end
+
+--- Fast path: scroll tear/tracking sprites while a burst is visible.
+--- @param event NthTickEventData
+function M.on_anim_tick(event)
+  if not storage.active_overlays then
+    return
+  end
+  for player_index, active in pairs(storage.active_overlays) do
+    if active then
+      local player = game.get_player(player_index)
+      if player and player.valid then
+        glitch.animate(player)
+      end
+    end
+  end
+  ensure_anim_tick()
 end
 
 --- Re-bind nth tick after load (do not write `storage` here).
 function M.on_load()
   nth_tick_registered = false
+  anim_tick_registered = false
   if any_active() then
     script.on_nth_tick(NTH, M.on_nth_tick)
     nth_tick_registered = true
+  end
+  if any_rolling() then
+    script.on_nth_tick(ANIM_NTH, M.on_anim_tick)
+    anim_tick_registered = true
   end
 end
 
