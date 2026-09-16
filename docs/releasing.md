@@ -2,11 +2,20 @@
 
 GitHub Actions builds the Mod Portal ZIP. You do not need to run `scripts/package_mod.sh` locally unless you want a dry run.
 
+## Version alignment
+
+Release tags `vX.Y.Z` must match **both**:
+
+- `factorio-mod/info.json` → `"version": "X.Y.Z"`
+- root `Cargo.toml` → `[workspace.package] version = "X.Y.Z"`
+
+The Release workflow fails if the tag and `info.json` disagree (that is what broke `v0.2.0` when only Cargo.toml was bumped).
+
 ## Steps
 
-1. Bump `factorio-mod/info.json` version and add notes in `CHANGELOG.md`.
+1. Bump `factorio-mod/info.json` and `[workspace.package].version` together; add notes in `CHANGELOG.md`.
 2. Commit and push.
-3. Tag matching `info.json`: `git tag v0.1.2` then `git push origin v0.1.2`.
+3. Tag matching that version: `git tag v0.2.0` then `git push origin v0.2.0`.
 4. The **Release** workflow packages the zip, checks it has no executables/scripts, and attaches it to a GitHub Release.
 5. Download that zip from the GitHub Release and upload it on the Factorio Mod Portal.
 6. If the portal description changed, paste from [mod-portal.md](mod-portal.md).

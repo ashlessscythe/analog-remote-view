@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.0] — 2026-09-16
+
+### Added
+
+- Rust companion app workspace: Factorio discovery, macOS ScreenCaptureKit window capture, and a live wgpu presentation window
+- Local/CI checks via `scripts/ci-check.sh` (fmt, clippy, test, build, `--once` smoke)
+
+### Changed
+
+- Project version aligned across `Cargo.toml` workspace packages and the Factorio mod `info.json`
+
 ## [0.1.4] — 2026-09-15
 
 ### Changed
