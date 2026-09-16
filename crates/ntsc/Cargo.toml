@@ -1,0 +1,9 @@
+[package]
+name = "analog-remote-view-ntsc"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Thin adapter around the ntsc-rs processing crate (stub until Milestone 7)"
+
+[dependencies]
+analog-remote-view-core = { workspace = true }

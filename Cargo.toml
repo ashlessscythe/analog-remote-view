@@ -1,0 +1,30 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/core",
+    "crates/capture",
+    "crates/ntsc",
+    "crates/presentation",
+    "crates/remote-state",
+    "crates/app",
+]
+default-members = ["crates/app"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/ashlessscythe/analog-remote-view"
+authors = ["Tony"]
+
+[workspace.dependencies]
+analog-remote-view-core = { path = "crates/core" }
+analog-remote-view-capture = { path = "crates/capture" }
+analog-remote-view-ntsc = { path = "crates/ntsc" }
+analog-remote-view-presentation = { path = "crates/presentation" }
+analog-remote-view-remote-state = { path = "crates/remote-state" }
+anyhow = "1"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+sysinfo = "0.33"

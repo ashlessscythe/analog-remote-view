@@ -32,11 +32,11 @@ jobs:
             else
               echo "OK $f"
             fi
-          done < <(find . -name '*.lua' -not -path './dist/*' -print0)
+          done < <(find factorio-mod -name '*.lua' -print0)
           exit $FAIL
 
       - name: Validate info.json
-        run: python3 -c "import json; json.load(open('info.json')); print('info.json OK')"
+        run: python3 -c "import json; json.load(open('factorio-mod/info.json')); print('info.json OK')"
 
       - name: Build portal zip
         run: |
@@ -45,8 +45,8 @@ jobs:
 
       - name: Validate archive
         run: |
-          ZIP=$(python3 -c "import json; i=json.load(open('info.json')); print(f\"{i['name']}_{i['version']}.zip\")")
-          PREFIX=$(python3 -c "import json; i=json.load(open('info.json')); print(f\"{i['name']}_{i['version']}/\")")
+          ZIP=$(python3 -c "import json; i=json.load(open('factorio-mod/info.json')); print(f\"{i['name']}_{i['version']}.zip\")")
+          PREFIX=$(python3 -c "import json; i=json.load(open('factorio-mod/info.json')); print(f\"{i['name']}_{i['version']}/\")")
           unzip -l "dist/${ZIP}" | head -40
           unzip -l "dist/${ZIP}" | grep -F "${PREFIX}info.json"
           unzip -l "dist/${ZIP}" | grep -F "${PREFIX}changelog.txt"
@@ -62,3 +62,14 @@ jobs:
             printf '%s\n' "${BAD_MODE}"
             exit 1
           fi
+
+  rust:
+    name: Rust workspace build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build workspace
+        run: cargo build --workspace
+      - name: Run companion app (discovery)
+        run: cargo run -p analog-remote-view -- --once

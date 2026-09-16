@@ -3,3 +3,7 @@ dist/
 changelog.txt
 .DS_Store
 *.log
+target/
+**/target/
+.cargo-cache/
+*.pdb

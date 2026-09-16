@@ -33,8 +33,8 @@ jobs:
       - name: Read mod metadata
         id: meta
         run: |
-          NAME=$(python3 -c "import json; print(json.load(open('info.json'))['name'])")
-          VERSION=$(python3 -c "import json; print(json.load(open('info.json'))['version'])")
+          NAME=$(python3 -c "import json; print(json.load(open('factorio-mod/info.json'))['name'])")
+          VERSION=$(python3 -c "import json; print(json.load(open('factorio-mod/info.json'))['version'])")
           ZIP="${NAME}_${VERSION}.zip"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
