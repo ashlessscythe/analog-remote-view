@@ -1,4 +1,4 @@
-//! Windows Graphics Capture discovery stub (process-based until Milestone 3).
+//! Windows Graphics Capture discovery stub (process-based; streaming later).
 
 use analog_remote_view_core::{CaptureBackendKind, FactorioTarget};
 
@@ -25,8 +25,8 @@ impl CaptureBackend for WindowsCapture {
     }
 
     fn find_factorio(&self) -> Result<FactorioTarget, FindError> {
-        // Milestone 2: process discovery. Window HWND targeting arrives with
-        // the `windows-capture` integration in Milestone 3.
+        // Process discovery only. Window HWND targeting arrives with
+        // the `windows-capture` integration in a later milestone.
         find_factorio_processes()
             .into_iter()
             .next()

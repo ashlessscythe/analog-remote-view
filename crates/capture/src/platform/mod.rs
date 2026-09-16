@@ -1,11 +1,11 @@
 //! Platform-specific capture backend selection.
 
+#[cfg(all(unix, not(target_os = "macos")))]
+mod linux;
 #[cfg(target_os = "macos")]
 mod macos;
 #[cfg(target_os = "windows")]
 mod windows;
-#[cfg(all(unix, not(target_os = "macos")))]
-mod linux;
 
 use crate::CaptureBackend;
 

@@ -25,8 +25,7 @@ impl CaptureBackend for LinuxCapture {
     }
 
     fn find_factorio(&self) -> Result<FactorioTarget, FindError> {
-        // Milestone 2: process discovery only. PipeWire / X11 window capture
-        // is Milestone 3+.
+        // Process discovery only. PipeWire / X11 window capture is later.
         find_factorio_processes()
             .into_iter()
             .next()

@@ -1,7 +1,7 @@
 //! Cross-platform Factorio discovery and capture abstraction.
 //!
-//! Milestone 2 focuses on finding Factorio. Frame streaming arrives in later
-//! milestones; backends are selected behind [`CaptureBackend`].
+//! Milestone 3 adds macOS ScreenCaptureKit window streaming into shared
+//! [`Frame`] values. Other platforms still discover Factorio only.
 
 mod discover;
 mod platform;
@@ -11,7 +11,7 @@ pub use platform::{create_backend, PlatformCapture};
 
 use analog_remote_view_core::{CaptureBackendKind, FactorioTarget, Frame};
 
-/// Platform capture backend. Streaming methods are stubs until Milestone 3.
+/// Platform capture backend.
 pub trait CaptureBackend {
     fn kind(&self) -> CaptureBackendKind;
 
@@ -19,19 +19,22 @@ pub trait CaptureBackend {
     /// fall back to process discovery.
     fn find_factorio(&self) -> Result<FactorioTarget, FindError>;
 
-    /// Reserved for Milestone 3+.
+    /// Start capturing frames from `target`.
     fn start_capture(&mut self, _target: &FactorioTarget) -> Result<(), FindError> {
         Err(FindError::NotImplemented(
-            "window capture streaming is not implemented yet (Milestone 3)".into(),
+            "window capture streaming is not implemented yet on this platform".into(),
         ))
     }
 
-    /// Reserved for Milestone 3+.
+    /// Take the latest completed frame, if any (drops stale frames).
     fn next_frame(&mut self) -> Result<Option<Frame>, FindError> {
         Err(FindError::NotImplemented(
-            "window capture streaming is not implemented yet (Milestone 3)".into(),
+            "window capture streaming is not implemented yet on this platform".into(),
         ))
     }
+
+    /// Stop an active capture session.
+    fn stop_capture(&mut self) {}
 }
 
 /// Errors from discovery / capture setup.
