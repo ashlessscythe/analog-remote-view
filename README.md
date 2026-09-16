@@ -3,10 +3,10 @@
 Cross-platform companion application + Factorio mod that processes **Remote View**
 through real [ntsc-rs](https://github.com/ntsc-rs/ntsc-rs) NTSC/VHS processing.
 
-> **Status:** early scaffolding (Milestone 3). The Factorio mod still ships its
-> legacy GUI CRT overlay under `factorio-mod/`. The Rust companion app discovers
-> a running Factorio window and streams it via ScreenCaptureKit on macOS;
-> wgpu display and ntsc-rs integration are next.
+> **Status:** early scaffolding (Milestone 4). The Factorio mod still ships its
+> legacy GUI CRT overlay under `factorio-mod/`. The Rust companion app captures a
+> Factorio window via ScreenCaptureKit on macOS and displays it in a wgpu
+> companion window; Remote View gating and ntsc-rs are next.
 
 ## Architecture
 
@@ -32,14 +32,14 @@ analog-remote-view/
     core/                    # Frame types, errors, traits
     capture/                 # Platform capture + Factorio discovery
     ntsc/                    # ntsc-rs adapter (stub)
-    presentation/            # winit/wgpu overlay (stub)
+    presentation/            # winit/wgpu companion window
     remote-state/            # Remote View state abstraction
   factorio-mod/              # Factorio 2.1 mod (current GUI overlay)
   scripts/                   # Mod Portal packaging helpers
   THIRD_PARTY.md
 ```
 
-## Companion app (Milestone 3)
+## Companion app (Milestone 4)
 
 Requires a recent stable Rust toolchain.
 
@@ -54,28 +54,29 @@ cargo build --workspace
 cargo run -p analog-remote-view
 ```
 
-Expected output shape (macOS, Factorio running):
+Expected interactive output (macOS, Factorio running):
 
 ```text
 Analog Remote View companion
-Milestone 3: Factorio window capture
+Milestone 4: capture + display
 
 Capture backend: macOS ScreenCaptureKit
 Finding Factorio...
 Factorio found.
 Capture target: pid=… name=… window_id=…
 Starting capture...
-Capturing Factorio window… (Ctrl+C to stop)
+Opening presentation window… (Esc or close window to stop)
 Wrote preview: analog-remote-view-preview.png (…x…)
-capture: frames=… size=…x… ~… fps
+display: frames=… size=…x… ~… fps
 ```
 
-The first captured frame is written to `analog-remote-view-preview.png` in the
-working directory so you can confirm it is the Factorio window.
+A separate **Analog Remote View** window shows the live capture (letterboxed).
+This is a companion preview — not yet a transparent overlay on Factorio.
 
-If Factorio is not running, the app reports that clearly. Use `--once` to exit
-successfully when Factorio is absent (CI smoke), or to capture briefly and exit
-when it is present:
+The first captured frame is also written to `analog-remote-view-preview.png`.
+
+If Factorio is not running, the app reports that clearly. Use `--once` for a
+headless CI smoke (no window):
 
 ```bash
 cargo run -p analog-remote-view -- --once
@@ -90,16 +91,17 @@ cargo run -p analog-remote-view -- --once
 - `.cargo/config.toml` adds `-Wl,-rpath,/usr/lib/swift` so the Swift concurrency
   dylib used by the ScreenCaptureKit bridge resolves at runtime. You should not
   need a manual `RUSTFLAGS` override for normal `cargo run`.
-- This cloud/Linux environment cannot runtime-test ScreenCaptureKit; validate on
-  a Mac with Factorio running and visible (not fully minimized).
+- For reliable capture (especially with Aerospace): run Factorio **windowed** in
+  the **same workspace** as Cursor / the terminal that launches the companion.
+- Validate on a Mac with Factorio visible (not fully minimized).
 
 ### Platforms
 
-| Platform | Capture | Discovery |
-|----------|---------|-----------|
-| macOS | ScreenCaptureKit window stream (Milestone 3) | SCK window/app list + process fallback |
-| Windows | planned: Windows Graphics Capture | Process name via `sysinfo` |
-| Linux | planned: PipeWire / X11 | Process name via `sysinfo` |
+| Platform | Capture | Display | Discovery |
+|----------|---------|---------|-----------|
+| macOS | ScreenCaptureKit window stream | wgpu companion window | SCK + process fallback |
+| Windows | planned: Windows Graphics Capture | planned | Process name via `sysinfo` |
+| Linux | planned: PipeWire / X11 | planned | Process name via `sysinfo` |
 
 ## Factorio mod
 
@@ -124,7 +126,7 @@ See [`docs/releasing.md`](docs/releasing.md).
 1. Workspace builds — **done**
 2. Find Factorio — **done**
 3. Capture Factorio window — **done (macOS)**
-4. Display frames with wgpu
+4. Display frames with wgpu — **done (companion window)**
 5. Remote View marker detection
 6. Show presentation only in Remote View
 7. Integrate real ntsc-rs (~854×480 intermediate)

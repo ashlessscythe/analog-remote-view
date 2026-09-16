@@ -3,7 +3,13 @@ name = "analog-remote-view-presentation"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "wgpu / winit presentation and overlay window (stub until Milestone 4)"
+description = "wgpu / winit presentation window for captured frames"
 
 [dependencies]
+analog-remote-view-capture = { workspace = true }
 analog-remote-view-core = { workspace = true }
+anyhow = { workspace = true }
+pollster = { workspace = true }
+tracing = { workspace = true }
+wgpu = { workspace = true }
+winit = { workspace = true }

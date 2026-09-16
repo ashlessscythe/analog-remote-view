@@ -1,7 +1,7 @@
 //! Analog Remote View companion application entry point.
 //!
-//! Milestone 3: discover Factorio and stream its window via the platform
-//! capture backend (ScreenCaptureKit on macOS). Display / ntsc-rs come later.
+//! Milestone 4: discover Factorio, stream its window, and display frames in a
+//! wgpu companion window. ntsc-rs / Remote View gating arrive later.
 
 use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -10,6 +10,7 @@ use std::time::{Duration, Instant};
 
 use analog_remote_view_capture::{create_backend, CaptureBackend, FindError};
 use analog_remote_view_core::{CaptureBackendKind, Frame, PixelFormat};
+use analog_remote_view_presentation::Presenter;
 use tracing::{error, info, warn};
 
 const PREVIEW_PNG: &str = "analog-remote-view-preview.png";
@@ -41,7 +42,7 @@ fn init_logging() {
 
 fn run(once: bool) -> anyhow::Result<()> {
     println!("Analog Remote View companion");
-    println!("Milestone 3: Factorio window capture");
+    println!("Milestone 4: capture + display");
     println!();
 
     let mut backend = create_backend();
@@ -83,7 +84,7 @@ fn run(once: bool) -> anyhow::Result<()> {
     if !matches!(kind, CaptureBackendKind::MacOsScreenCaptureKit) {
         println!(
             "Note: window capture streaming is only implemented on macOS \
-             ScreenCaptureKit for Milestone 3."
+             ScreenCaptureKit for Milestone 4."
         );
         if once {
             return Ok(());
@@ -95,20 +96,45 @@ fn run(once: bool) -> anyhow::Result<()> {
 
     println!("Starting capture...");
     backend.start_capture(&target)?;
-    println!("Capturing Factorio window… (Ctrl+C to stop)");
+
     if once {
+        println!("Capturing Factorio window… (headless --once)");
         println!(
             "--once: waiting up to {}s for a frame",
             ONCE_TIMEOUT.as_secs()
         );
+        return run_once_headless(&mut backend);
     }
 
+    println!("Opening presentation window… (Esc or close window to stop)");
+    Presenter::run(&mut backend, |frame| {
+        match write_preview_png(Path::new(PREVIEW_PNG), frame) {
+            Ok(()) => {
+                println!(
+                    "Wrote preview: {PREVIEW_PNG} ({}x{})",
+                    frame.width, frame.height
+                );
+                info!(
+                    path = PREVIEW_PNG,
+                    width = frame.width,
+                    height = frame.height,
+                    "wrote first-frame preview PNG"
+                );
+            }
+            Err(err) => warn!(error = %err, "failed to write preview PNG"),
+        }
+    })?;
+
+    Ok(())
+}
+
+fn run_once_headless(backend: &mut impl CaptureBackend) -> anyhow::Result<()> {
     let running = Arc::new(AtomicBool::new(true));
     {
         let flag = Arc::clone(&running);
-        ctrlc::set_handler(move || {
+        let _ = ctrlc::set_handler(move || {
             flag.store(false, Ordering::SeqCst);
-        })?;
+        });
     }
 
     let started = Instant::now();
@@ -119,7 +145,7 @@ fn run(once: bool) -> anyhow::Result<()> {
     let mut wrote_preview = false;
 
     while running.load(Ordering::SeqCst) {
-        if once && started.elapsed() >= ONCE_TIMEOUT {
+        if started.elapsed() >= ONCE_TIMEOUT {
             break;
         }
 
@@ -146,17 +172,16 @@ fn run(once: bool) -> anyhow::Result<()> {
                         }
                         Err(err) => {
                             warn!(error = %err, "failed to write preview PNG");
-                            wrote_preview = true; // avoid retry spam
+                            wrote_preview = true;
                         }
                     }
                 }
 
-                if once && frames_total >= 1 && wrote_preview {
-                    // Keep gathering briefly so stats are meaningful, but allow
-                    // early exit after the first successful frame + PNG.
-                    if started.elapsed() >= Duration::from_millis(500) {
-                        break;
-                    }
+                if frames_total >= 1
+                    && wrote_preview
+                    && started.elapsed() >= Duration::from_millis(500)
+                {
+                    break;
                 }
             }
             None => {
@@ -171,13 +196,6 @@ fn run(once: bool) -> anyhow::Result<()> {
                 "capture: frames={frames_total} size={}x{} ~{fps:.1} fps",
                 last_size.0, last_size.1
             );
-            info!(
-                frames = frames_total,
-                width = last_size.0,
-                height = last_size.1,
-                fps = format!("{fps:.1}"),
-                "capture stats"
-            );
             frames_window = 0;
             last_stats = Instant::now();
         }
@@ -186,12 +204,9 @@ fn run(once: bool) -> anyhow::Result<()> {
     backend.stop_capture();
 
     if frames_total == 0 {
-        if once {
-            println!("No frames captured within timeout (Factorio may be minimized).");
-            warn!("no frames captured in --once mode");
-            return Ok(());
-        }
-        return Err(anyhow::anyhow!("no frames were captured"));
+        println!("No frames captured within timeout (Factorio may be minimized).");
+        warn!("no frames captured in --once mode");
+        return Ok(());
     }
 
     println!(
