@@ -4,7 +4,7 @@ GitHub Actions builds the Mod Portal ZIP. You do not need to run `scripts/packag
 
 ## Steps
 
-1. Bump `info.json` version and add notes in `CHANGELOG.md`.
+1. Bump `factorio-mod/info.json` version and add notes in `CHANGELOG.md`.
 2. Commit and push.
 3. Tag matching `info.json`: `git tag v0.1.2` then `git push origin v0.1.2`.
 4. The **Release** workflow packages the zip, checks it has no executables/scripts, and attaches it to a GitHub Release.
@@ -18,6 +18,6 @@ CI smoke-tests the same zip rules on pull requests without creating a release.
 
 - Zip name: `analog-remote-view_<version>.zip`
 - One top-level folder: `analog-remote-view_<version>/`
-- Tag `vX.Y.Z` must match `info.json` version `X.Y.Z`
+- Tag `vX.Y.Z` must match `factorio-mod/info.json` version `X.Y.Z`
 - No `.sh` / `.py` / binaries in the zip; execute bits stripped
 - `docs/`, packaging `scripts/`, `media/`, and `CHANGELOG.md` stay in git only; Factorio gets generated `changelog.txt`

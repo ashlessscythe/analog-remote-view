@@ -1,0 +1,9 @@
+[package]
+name = "analog-remote-view-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Shared frame types, configuration, and pipeline traits for Analog Remote View"
+
+[dependencies]
+thiserror = { workspace = true }

@@ -1,0 +1,9 @@
+[package]
+name = "analog-remote-view-presentation"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "wgpu / winit presentation and overlay window (stub until Milestone 4)"
+
+[dependencies]
+analog-remote-view-core = { workspace = true }

@@ -1,0 +1,21 @@
+[package]
+name = "analog-remote-view"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Analog Remote View companion application"
+readme = "../../README.md"
+
+[[bin]]
+name = "analog-remote-view"
+path = "src/main.rs"
+
+[dependencies]
+analog-remote-view-capture = { workspace = true }
+analog-remote-view-core = { workspace = true }
+analog-remote-view-ntsc = { workspace = true }
+analog-remote-view-presentation = { workspace = true }
+analog-remote-view-remote-state = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
